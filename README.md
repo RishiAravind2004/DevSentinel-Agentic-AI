@@ -1,378 +1,129 @@
-# 🛡️ DevSentinel
+# 🛡️ DevSentinel — Minimal AI Testing Agent
 
-### AI-Powered Application Testing Agent
-
-DevSentinel is an **AI-powered testing agent** designed to reduce the repetitive effort involved in manually testing applications after frequent development changes.
-
-The agent analyzes an application, generates relevant test cases, executes automated tests, detects failures, and provides actionable results to help developers validate their applications efficiently.
+An AI-powered API testing agent built with **Google ADK** and **httpx**.  
+Give it a URL — it discovers, generates test cases, executes them, and reports results.
 
 ---
 
-## 🚀 Features
+## ✨ How It Works
 
-- 🤖 AI-powered test planning and execution
-- 🧪 Automatic test case generation
-- 🌐 Web application testing
-- 🔌 API testing
-- 🔗 Web + API application testing
-- 🎭 Browser automation using Playwright
-- 📡 API testing using HTTPX
-- ❌ Failure detection and reporting
-- 📊 Actionable test results
-- 🔄 Supports repeated testing after application changes
-
----
-
-## 🎯 Problem Statement
-
-During application development, developers frequently make changes to features, APIs, user interfaces, and backend logic.
-
-Manually testing the entire application after every change can be:
-
-- Time-consuming
-- Repetitive
-- Difficult to maintain
-- Prone to human error
-
-DevSentinel aims to reduce this manual effort by automating the application testing workflow.
-
----
-
-## 💡 Solution
-
-DevSentinel uses an **agent-based architecture** to analyze the application and determine the appropriate testing approach.
-
-It currently supports three testing modes:
-
-```text
-WEB
-└── Playwright
-
-API
-└── HTTPX
-
-WEB + API
-├── Playwright
-└── HTTPX
 ```
-
----
-
-## 🏗️ Architecture
-
-```text
-                    ┌─────────────────┐
-                    │     Developer   │
-                    │ Application URL │
-                    └────────┬────────┘
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │   DevSentinel   │
-                    │   AI Agent      │
-                    └────────┬────────┘
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │ Application     │
-                    │ Discovery       │
-                    └────────┬────────┘
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │ Test Planning   │
-                    │ & Generation    │
-                    └────────┬────────┘
-                             │
-              ┌──────────────┼──────────────┐
-              ▼              ▼              ▼
-          Web Testing    API Testing    Web + API
-              │              │              │
-              ▼              ▼              ▼
-         Playwright       HTTPX      Playwright
-                                        +
-                                      HTTPX
-              │              │              │
-              └──────────────┼──────────────┘
-                             ▼
-                    ┌─────────────────┐
-                    │ Test Execution  │
-                    └────────┬────────┘
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │ Results &       │
-                    │ Failure Report  │
-                    └─────────────────┘
-```
-
----
-
-## 🧠 Agent Workflow
-
-```text
-User Request
+User gives URL
       │
       ▼
-Application Discovery
+① Discover      — httpx pings the URL, checks reachability + content-type
       │
       ▼
-Identify Application Type
+② Plan Tests    — Gemini AI generates 5–8 relevant test cases
       │
-      ├── Web Application
-      │
-      ├── API
-      │
-      └── Web + API
-             │
-             ▼
-      Generate Test Cases
-             │
-             ▼
-       Execute Tests
-             │
-             ▼
-      Analyze Results
-             │
-             ▼
-       Generate Report
+      ▼
+③ Execute Loop  — httpx runs each test (GET / POST / PUT / DELETE)
+      │             reports ✅ PASS / ❌ FAIL live
+      ▼
+④ Report        — Final score + summary table
 ```
 
 ---
 
-## 🛠️ Technology Stack
+## 📁 Project Structure
 
-| Technology | Purpose |
-|---|---|
-| Python | Core programming language |
-| LangGraph | Agent workflow orchestration |
-| Playwright | Web application testing |
-| HTTPX | API testing |
-| Pydantic | Data validation and state models |
-
----
-
-## 📂 Project Structure
-
-```text
-DevSentinel-Agentic-AI/
-│
-├── app/
-│   ├── agents/
-│   │   └── testing_agent.py
-│   │
-│   ├── graph/
-│   │   └── workflow.py
-│   │
-│   ├── nodes/
-│   │   ├── discovery.py
-│   │   ├── test_planner.py
-│   │   ├── web_tester.py
-│   │   ├── api_tester.py
-│   │   ├── executor.py
-│   │   └── reporter.py
-│   │
-│   ├── tools/
-│   │   ├── playwright_tool.py
-│   │   └── httpx_tool.py
-│   │
-│   ├── models/
-│   │   └── state.py
-│   │
-│   └── main.py
-│
-├── tests/
-│
-├── reports/
-│
-├── requirements.txt
-│
+```
+Testing Agent/
+├── .env                      ← your Gemini API key
 ├── README.md
-│
-└── .gitignore
+└── dev_sentinel/
+    ├── __init__.py
+    └── agent.py              ← Agent + 3 tools (~160 lines)
 ```
 
 ---
 
-## ⚙️ Installation
+## 🚀 Quick Start
 
-### 1. Clone the Repository
+### 1. Install dependencies
 
 ```bash
-git clone https://github.com/RishiAravind2004/DevSentinel-Agentic-AI.git
+pip install google-adk httpx
 ```
 
-### 2. Navigate to the Project
+### 2. Add your API key
+
+Open `.env` and paste your key from [Google AI Studio](https://aistudio.google.com/app/apikey):
+
+```env
+GOOGLE_API_KEY=AIza...your_key_here
+```
+
+### 3. Run the agent
 
 ```bash
-cd DevSentinel-Agentic-AI
+# Web UI (recommended)
+adk web
+
+# CLI
+adk run dev_sentinel "Test https://jsonplaceholder.typicode.com"
 ```
 
-### 3. Create a Virtual Environment
+Open **http://127.0.0.1:8000** in your browser.
 
-```bash
-python -m venv venv
+---
+
+## 🛠️ Tools
+
+| Tool | Description |
+|---|---|
+| `discover_endpoints(base_url)` | Confirms URL is reachable via httpx, returns status + content-type |
+| `run_test_case(base_url, method, path, expected_status, body)` | Runs one HTTP test, returns PASS/FAIL + response time (ms) |
+| `generate_report(results_json)` | Aggregates all results into a score + summary |
+
+---
+
+## 💬 Example Prompts
+
 ```
-
-### 4. Activate the Virtual Environment
-
-#### Windows
-
-```bash
-venv\Scripts\activate
-```
-
-#### Linux / macOS
-
-```bash
-source venv/bin/activate
-```
-
-### 5. Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 6. Install Playwright Browsers
-
-```bash
-playwright install
+Test https://jsonplaceholder.typicode.com
+Check https://httpbin.org
+Run tests on https://api.github.com
 ```
 
 ---
 
-## ▶️ Usage
+## 📊 Sample Output
 
-Run the application:
-
-```bash
-python app/main.py
 ```
+✅ Discovering https://jsonplaceholder.typicode.com...
+   Status: 200 | Content-Type: application/json
 
-Example testing modes:
+📋 Planned 6 test cases:
+   1. GET  /posts          → expect 200
+   2. GET  /posts/1        → expect 200
+   3. POST /posts          → expect 201
+   4. PUT  /posts/1        → expect 200
+   5. DELETE /posts/1      → expect 200
+   6. GET  /invalid        → expect 404
 
-```text
-1. Web Application Testing
-2. API Testing
-3. Web + API Testing
-```
+🔄 Running tests...
+   ✅ GET  /posts       200  (312ms)
+   ✅ GET  /posts/1     200  (289ms)
+   ✅ POST /posts       201  (341ms)
+   ✅ PUT  /posts/1     200  (298ms)
+   ✅ DELETE /posts/1   200  (276ms)
+   ✅ GET  /invalid     404  (261ms)
 
-Provide the application URL or API endpoint, and DevSentinel will execute the appropriate testing workflow.
-
----
-
-## 🧪 Supported Testing Types
-
-### 🌐 Web Application
-
-Uses **Playwright** to test:
-
-- Page accessibility
-- Navigation
-- Forms
-- User interactions
-- UI functionality
-- Application workflows
-
-### 🔌 API
-
-Uses **HTTPX** to test:
-
-- API endpoints
-- HTTP methods
-- Response status codes
-- Response data
-- API behavior
-
-### 🔗 Web + API
-
-Combines:
-
-- Playwright for frontend testing
-- HTTPX for backend API testing
-
----
-
-## 📊 Example Output
-
-```text
-DevSentinel Test Report
-
-Application Type: Web + API
-
-Tests Executed: 15
-Passed: 12
-Failed: 2
-Skipped: 1
-
-Status: PARTIAL FAILURE
-
-Failures:
-
-1. Login API returned HTTP 500
-2. Profile update form validation failed
+📊 Report: 6/6 passed ✅
 ```
 
 ---
 
-## 🎯 Project Goals
+## ⚙️ Requirements
 
-- Reduce repetitive manual testing
-- Automate test case generation
-- Validate applications after development changes
-- Detect functional failures
-- Provide useful test reports
-- Support both frontend and backend testing
+- Python 3.10+
+- `google-adk`
+- `httpx`
+- Gemini API key (free at [aistudio.google.com](https://aistudio.google.com/app/apikey))
 
 ---
 
-## 🔮 Future Enhancements
+## 📄 License
 
-- [ ] AI-based intelligent test case generation
-- [ ] Requirement-based testing
-- [ ] Automatic regression testing
-- [ ] Screenshot capture for failed tests
-- [ ] Detailed HTML/PDF reports
-- [ ] CI/CD integration
-- [ ] Test history and analytics dashboard
-- [ ] Database testing
-- [ ] Authentication workflow testing
-- [ ] Parallel test execution
-
----
-
-## ⚠️ Scope
-
-DevSentinel focuses on **functional application testing and validation**.
-
-Current scope includes:
-
-- Web application testing
-- API testing
-- Web + API testing
-- Automated test execution
-- Functional validation
-
-It does **not** focus on penetration testing, vulnerability exploitation, or offensive security testing.
-
----
-
-## 👨‍💻 Author
-
-**Rishi Aravind P**
-
-- GitHub: [RishiAravind2004](https://github.com/RishiAravind2004)
-- LinkedIn: [rishi-aravind](https://linkedin.com/in/rishi-aravind)
-
----
-
-## ⭐ Support
-
-If you find this project useful, consider giving the repository a ⭐!
-
----
-
-### 📌 Project Status
-
-🚧 **Currently Under Development**
+MIT
